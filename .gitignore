@@ -1,0 +1,34 @@
+# OS
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+logs/
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Build / dependency output
+dist/
+build/
+out/
+bin/
+obj/
+node_modules/
+__pycache__/
+*.pyc
+
+# Archives / temp
+*.tmp
+*.temp
+*.bak
