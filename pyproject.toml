@@ -1,0 +1,23 @@
+[project]
+name = "cio-info-agent"
+version = "0.1.0"
+description = "CIO Info Agent - Telegram-Bot fuer kuratierte Tech-News-Briefings"
+requires-python = ">=3.12"
+dependencies = [
+    "python-telegram-bot>=22.8",
+    "feedparser>=6.0.14",
+    "apscheduler>=3.11.3",
+    "openai>=3.37.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/cio_info_agent"]
