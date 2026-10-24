@@ -81,6 +81,7 @@ class IngestionService:
                     titel=eintrag.titel,
                     veroeffentlicht_am=eintrag.veroeffentlicht_am or jetzt,
                     eingegangen_am=jetzt,
+                    beschreibung=eintrag.beschreibung,
                 )
                 self._repository.speichere(artikel)
                 neue_artikel.append(artikel)

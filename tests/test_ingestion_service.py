@@ -74,6 +74,7 @@ def test_new_entries_are_stored_as_eingegangen() -> None:
         link="https://example.com/new",
         titel="New article",
         veroeffentlicht_am=datetime(2026, 10, 23, tzinfo=timezone.utc),
+        beschreibung="A description from the feed.",
     )
     feed_port = FakeFeedPort(eintraege_je_url={ALLE_QUELLEN_URLS[Quelle.CIO_COM]: [eintrag]})
     repository = FakeArtikelRepository()
@@ -83,6 +84,7 @@ def test_new_entries_are_stored_as_eingegangen() -> None:
 
     assert len(ergebnis.neue_artikel) == 1
     assert ergebnis.neue_artikel[0].link == "https://example.com/new"
+    assert ergebnis.neue_artikel[0].beschreibung == "A description from the feed."
     assert repository.existiert(
         ArtikelId.von_quelle_und_link(Quelle.CIO_COM, "https://example.com/new")
     )

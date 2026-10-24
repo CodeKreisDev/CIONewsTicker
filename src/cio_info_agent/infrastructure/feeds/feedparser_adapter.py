@@ -80,6 +80,7 @@ class FeedparserAdapter:
             return None
 
         titel = getattr(entry, "title", "")
+        beschreibung = getattr(entry, "summary", "") or getattr(entry, "description", "") or ""
         veroeffentlicht_struct: struct_time | None = getattr(entry, "published_parsed", None)
         veroeffentlicht_am: datetime | None = None
         if veroeffentlicht_struct is not None:
@@ -90,4 +91,6 @@ class FeedparserAdapter:
                 # feed) — fall back to "no date", same as a feed that never
                 # published one at all.
                 veroeffentlicht_am = None
-        return FeedEintrag(link=link, titel=titel, veroeffentlicht_am=veroeffentlicht_am)
+        return FeedEintrag(
+            link=link, titel=titel, veroeffentlicht_am=veroeffentlicht_am, beschreibung=beschreibung
+        )

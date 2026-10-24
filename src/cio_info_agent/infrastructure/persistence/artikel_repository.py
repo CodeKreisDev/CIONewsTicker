@@ -14,6 +14,7 @@ from cio_info_agent.domain.artikel.artikel import Artikel
 from cio_info_agent.domain.artikel.artikel_id import ArtikelId
 from cio_info_agent.domain.artikel.artikel_status import ArtikelStatus
 from cio_info_agent.domain.artikel.quelle import Quelle
+from cio_info_agent.domain.artikel.relevanz_score import RelevanzScore
 
 _CREATE_TABLE_SQL = """
 CREATE TABLE IF NOT EXISTS artikel (
@@ -21,11 +22,17 @@ CREATE TABLE IF NOT EXISTS artikel (
     quelle TEXT NOT NULL,
     link TEXT NOT NULL,
     titel TEXT NOT NULL,
+    beschreibung TEXT NOT NULL DEFAULT '',
     veroeffentlicht_am TEXT NOT NULL,
     eingegangen_am TEXT NOT NULL,
-    status TEXT NOT NULL
+    status TEXT NOT NULL,
+    relevanz_score INTEGER
 )
 """
+
+_SELECT_COLUMNS = (
+    "quelle, link, titel, beschreibung, veroeffentlicht_am, eingegangen_am, status, relevanz_score"
+)
 
 
 class ArtikelRepository:
@@ -46,17 +53,20 @@ class ArtikelRepository:
         try:
             self._connection.execute(
                 """
-                INSERT INTO artikel (id, quelle, link, titel, veroeffentlicht_am, eingegangen_am, status)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO artikel
+                    (id, quelle, link, titel, beschreibung, veroeffentlicht_am, eingegangen_am, status, relevanz_score)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 (
                     artikel.id.wert,
                     artikel.quelle.value,
                     artikel.link,
                     artikel.titel,
+                    artikel.beschreibung,
                     artikel.veroeffentlicht_am.isoformat(),
                     artikel.eingegangen_am.isoformat(),
                     artikel.status.value,
+                    artikel.relevanz_score.wert if artikel.relevanz_score else None,
                 ),
             )
             self._connection.commit()
@@ -68,25 +78,69 @@ class ArtikelRepository:
             # intended, so roll back this no-op attempt and move on.
             self._connection.rollback()
 
+    def aktualisiere(self, artikel: Artikel) -> None:
+        """Persist a state transition (status and/or relevanz_score) for an
+        already-stored Artikel.
+
+        Raises:
+            ValueError: if no stored Artikel with this id exists — this is a
+                programming error (updating something never persisted), not
+                a business-rule violation, so it fails fast with a plain
+                exception rather than silently no-op'ing.
+        """
+        cursor = self._connection.execute(
+            "UPDATE artikel SET status = ?, relevanz_score = ? WHERE id = ?",
+            (
+                artikel.status.value,
+                artikel.relevanz_score.wert if artikel.relevanz_score else None,
+                artikel.id.wert,
+            ),
+        )
+        self._connection.commit()
+        if cursor.rowcount == 0:
+            raise ValueError(f"No stored Artikel found with id {artikel.id.wert!r} to update.")
+
+    def lies_alle_mit_status(self, status: ArtikelStatus) -> list[Artikel]:
+        cursor = self._connection.execute(
+            f"SELECT id, {_SELECT_COLUMNS} FROM artikel WHERE status = ?",
+            (status.value,),
+        )
+        return [self._zu_artikel(row) for row in cursor.fetchall()]
+
     def lies(self, artikel_id: ArtikelId) -> Artikel | None:
         """Read back a stored Artikel by id (used by tests for round-tripping)."""
         cursor = self._connection.execute(
-            "SELECT quelle, link, titel, veroeffentlicht_am, eingegangen_am, status "
-            "FROM artikel WHERE id = ?",
+            f"SELECT id, {_SELECT_COLUMNS} FROM artikel WHERE id = ?",
             (artikel_id.wert,),
         )
         row = cursor.fetchone()
         if row is None:
             return None
-        quelle, link, titel, veroeffentlicht_am, eingegangen_am, status = row
+        return self._zu_artikel(row)
+
+    @staticmethod
+    def _zu_artikel(row: tuple) -> Artikel:
+        (
+            artikel_id,
+            quelle,
+            link,
+            titel,
+            beschreibung,
+            veroeffentlicht_am,
+            eingegangen_am,
+            status,
+            relevanz_score,
+        ) = row
         return Artikel(
-            id=artikel_id,
+            id=ArtikelId(wert=artikel_id),
             quelle=Quelle(quelle),
             link=link,
             titel=titel,
+            beschreibung=beschreibung,
             veroeffentlicht_am=_parse_iso(veroeffentlicht_am),
             eingegangen_am=_parse_iso(eingegangen_am),
             status=ArtikelStatus(status),
+            relevanz_score=RelevanzScore(relevanz_score) if relevanz_score is not None else None,
         )
 
 
