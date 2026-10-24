@@ -18,6 +18,7 @@ class FeedEintrag:
     link: str
     titel: str
     veroeffentlicht_am: datetime | None
+    beschreibung: str = ""
 
 
 class FeedNichtErreichbarError(RuntimeError):

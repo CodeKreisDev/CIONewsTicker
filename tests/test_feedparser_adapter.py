@@ -16,6 +16,7 @@ _VALID_FEED_XML = """<?xml version="1.0" encoding="UTF-8"?>
     <item>
       <title>Article One</title>
       <link>https://example.com/article-one</link>
+      <description>A short summary of article one.</description>
       <pubDate>Fri, 23 Oct 2026 10:00:00 GMT</pubDate>
     </item>
     <item>
@@ -79,6 +80,15 @@ def test_lies_eintraege_handles_missing_published_date() -> None:
 
     entry_without_date = next(e for e in eintraege if e.link == "https://example.com/article-no-date")
     assert entry_without_date.veroeffentlicht_am is None
+
+
+def test_lies_eintraege_extracts_description_into_beschreibung() -> None:
+    adapter = FeedparserAdapter()
+
+    eintraege = adapter.lies_eintraege(_VALID_FEED_XML)
+
+    entry_with_description = next(e for e in eintraege if e.link == "https://example.com/article-one")
+    assert entry_with_description.beschreibung == "A short summary of article one."
 
 
 def test_lies_eintraege_skips_entries_without_a_link() -> None:
