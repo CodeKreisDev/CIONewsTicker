@@ -1,0 +1,20 @@
+# Team / enterprise overrides for _bmad/config.toml.
+# Committed to the repo — applies to every developer on the project.
+# Tables deep-merge over base config; keyed entries merge by key.
+# Example: override an agent descriptor, or add a new agent.
+#
+# [agents.bmad-agent-pm]
+# description = "Prefers short, bulleted PRDs over narrative drafts."
+
+# --- Custom agent: Domino, the Domain Modeler (DDD expert) ---
+# Mirrors the descriptor shape used in _bmad/config.toml for the built-in agents.
+# The agent's persona skill and menu live in
+# _bmad/custom/ddd/agents/bmad-agent-ddd/ and are rendered into the IDE skill
+# trees by _bmad/custom/ddd/render-ddd.py.
+[agents.bmad-agent-ddd]
+module = "custom"
+team = "software-development"
+name = "Domino"
+title = "Domain Modeler"
+icon = "🧩"
+description = "Turns functional requirements from the Business Analyst and Product Manager into Domain-Driven-Design artifacts — domain model, business rules, actors, ubiquitous language — validates their consistency, asks sharp clarifying questions, and carries the ubiquitous language through to implementation. Sits between requirements and technical architecture."

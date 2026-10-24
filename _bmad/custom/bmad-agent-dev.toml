@@ -1,0 +1,9 @@
+# Team override for the bmad-agent-dev (Amelia) agent.
+# Loads the shared, language-agnostic DDD & Clean-Code principles so they act as
+# implementation guardrails alongside the Domain Modeler and the Architect.
+# Merge rule: persistent_facts arrays append to the defaults.
+
+[agent]
+persistent_facts = [
+  "file:{project-root}/_bmad/custom/ddd/ddd-principles.md",
+]

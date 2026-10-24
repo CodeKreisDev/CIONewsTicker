@@ -1,0 +1,16 @@
+# DO NOT EDIT -- source of truth for the custom DDD module.
+#
+# Workflow-level customization for the bmad-ddd-validation skill.
+# Overrides merge per BMad structural rules:
+#   scalars: override wins
+#   arrays (persistent_facts, activation_steps_*): append
+#   arrays-of-tables with `code`/`id`: replace matching items, append new ones.
+
+[workflow]
+
+persistent_facts = [
+  "file:{project-root}/_bmad/custom/ddd/ddd-principles.md",
+]
+
+activation_steps_prepend = []
+activation_steps_append = []

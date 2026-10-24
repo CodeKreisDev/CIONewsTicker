@@ -1,0 +1,9 @@
+# Team override for the bmad-agent-architect (Winston) agent.
+# Loads the shared, language-agnostic DDD & Clean-Code principles so the technical
+# architecture stays aligned with the domain model and clean-architecture layering.
+# Merge rule: persistent_facts arrays append to the defaults.
+
+[agent]
+persistent_facts = [
+  "file:{project-root}/_bmad/custom/ddd/ddd-principles.md",
+]

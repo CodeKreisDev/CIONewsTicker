@@ -1,0 +1,21 @@
+# DO NOT EDIT -- source of truth for the custom DDD module.
+#
+# Workflow-level customization for the bmad-ddd-discovery skill.
+# Overrides merge per BMad structural rules:
+#   scalars: override wins
+#   arrays (persistent_facts, activation_steps_*): append
+#   arrays-of-tables with `code`/`id`: replace matching items, append new ones.
+
+[workflow]
+
+# Persistent facts loaded on activation. `file:` entries are loaded as content.
+persistent_facts = [
+  "file:{project-root}/_bmad/custom/ddd/ddd-principles.md",
+]
+
+# Steps to run before / after the standard activation.
+activation_steps_prepend = []
+activation_steps_append = []
+
+# Path to the output document template.
+discovery_template = "{skill-root}/templates/domain-discovery-template.md"
