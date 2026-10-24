@@ -27,6 +27,14 @@ obj/
 node_modules/
 __pycache__/
 *.pyc
+.venv/
+*.egg-info/
+.pytest_cache/
+
+# SQLite runtime files
+*.db
+*.db-wal
+*.db-shm
 
 # Archives / temp
 *.tmp
